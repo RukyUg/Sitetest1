@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Keepers XR — Immersive Storytelling Studio</title>
+  <meta name="description" content="Keepers XR is a Kampala-based immersive storytelling studio specialising in VR, AR, 360° video, fulldome experiences, and virtual tours." />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --ink:      #050f07;
+      --forest:   #0a1f0d;
+      --canopy:   #122b16;
+      --mint:     #6fffc8;
+      --ghost:    #c8f5e0;
+      --mist:     rgba(200,245,224,0.12);
+      --serif:    'Cormorant Garamond', Georgia, serif;
+      --sans:     'Inter', system-ui, sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--ink);
+      color: var(--ghost);
+      font-family: var(--sans);
+      font-weight: 300;
+      overflow-x: hidden;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.25rem 2.5rem;
+      background: linear-gradient(to bottom, rgba(5,15,7,0.95), transparent);
+    }
+
+    .nav-logo {
+      font-family: var(--serif);
+      font-size: 1.1rem;
+      letter-spacing: 0.25em;
+      color: var(--ghost);
+      text-decoration: none;
+      font-weight: 400;
+    }
+
+    .nav-logo span { color: var(--mint); }
+
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 2rem;
+    }
+
+    nav ul a {
+      text-decoration: none;
+      color: rgba(200,245,224,0.6);
+      font-size: 0.75rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      transition: color 0.3s;
+    }
+
+    nav ul a:hover { color: var(--mint); }
+
+    /* ── HERO ── */
+    #hero {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    #three-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      pointer-events: none;
+    }
+
+    .hero-eyebrow {
+      font-size: 0.7rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--mint);
+      margin-bottom: 1.25rem;
+      opacity: 0.85;
+    }
+
+    .hero-title {
+      font-family: var(--serif);
+      font-size: clamp(3.5rem, 8vw, 7rem);
+      font-weight: 300;
+      line-height: 0.95;
+      letter-spacing: -0.01em;
+      color: #fff;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero-title em {
+      font-style: italic;
+      color: var(--mint);
+    }
+
+    .hero-sub {
+      font-size: clamp(0.85rem, 1.5vw, 1rem);
+      color: rgba(200,245,224,0.55);
+      letter-spacing: 0.05em;
+      max-width: 38ch;
+      margin: 0 auto 2.5rem;
+      line-height: 1.7;
+    }
+
+    .hero-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.75rem 2rem;
+      border: 0.5px solid rgba(111,255,200,0.4);
+      border-radius: 2px;
+      color: var(--mint);
+      text-decoration: none;
+      font-size: 0.75rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      pointer-events: all;
+      transition: background 0.3s, border-color 0.3s;
+    }
+
+    .hero-cta:hover {
+      background: rgba(111,255,200,0.08);
+      border-color: var(--mint);
+    }
+
+    .hero-drag-hint {
+      position: absolute;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 2;
+      font-size: 0.65rem;
+      letter-spacing: 0.25em;
+      color: rgba(200,245,224,0.3);
+      text-transform: uppercase;
+      animation: breathe 3s ease-in-out infinite;
+    }
+
+    @keyframes breathe {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 0.7; }
+    }
+
+    /* ── SECTIONS ── */
+    section {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 7rem 2.5rem;
+    }
+
+    .section-label {
+      font-size: 0.65rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--mint);
+      margin-bottom: 3rem;
+      opacity: 0.7;
+    }
+
+    .section-title {
+      font-family: var(--serif);
+      font-size: clamp(2.2rem, 4vw, 3.5rem);
+      font-weight: 300;
+      line-height: 1.1;
+      color: #fff;
+      margin-bottom: 1.5rem;
+    }
+
+    .section-title em { font-style: italic; color: var(--mint); }
+
+    .section-body {
+      font-size: 1rem;
+      line-height: 1.8;
+      color: rgba(200,245,224,0.55);
+      max-width: 55ch;
+    }
+
+    /* ── DIVIDER ── */
+    .divider {
+      width: 100%;
+      height: 0.5px;
+      background: rgba(111,255,200,0.12);
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    /* ── SERVICES ── */
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.5px;
+      margin-top: 4rem;
+      background: rgba(111,255,200,0.08);
+    }
+
+    .service-card {
+      background: var(--ink);
+      padding: 2.5rem 2rem;
+      transition: background 0.3s;
+      cursor: default;
+    }
+
+    .service-card:hover { background: var(--forest); }
+
+    .service-icon {
+      width: 36px;
+      height: 36px;
+      margin-bottom: 1.5rem;
+      color: var(--mint);
+      opacity: 0.7;
+    }
+
+    .service-name {
+      font-family: var(--serif);
+      font-size: 1.3rem;
+      font-weight: 400;
+      color: var(--ghost);
+      margin-bottom: 0.75rem;
+    }
+
+    .service-desc {
+      font-size: 0.82rem;
+      line-height: 1.7;
+      color: rgba(200,245,224,0.4);
+    }
+
+    /* ── PROJECTS ── */
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2px;
+      margin-top: 4rem;
+      background: rgba(111,255,200,0.06);
+    }
+
+    .project-card {
+      background: var(--ink);
+      padding: 3rem 2.5rem;
+      position: relative;
+      overflow: hidden;
+      transition: background 0.4s;
+    }
+
+    .project-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 2px;
+      height: 0;
+      background: var(--mint);
+      transition: height 0.4s;
+    }
+
+    .project-card:hover { background: var(--forest); }
+    .project-card:hover::before { height: 100%; }
+
+    .project-tag {
+      font-size: 0.65rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--mint);
+      opacity: 0.6;
+      margin-bottom: 1rem;
+    }
+
+    .project-title {
+      font-family: var(--serif);
+      font-size: 1.6rem;
+      font-weight: 300;
+      color: #fff;
+      line-height: 1.2;
+      margin-bottom: 1rem;
+    }
+
+    .project-desc {
+      font-size: 0.82rem;
+      line-height: 1.7;
+      color: rgba(200,245,224,0.4);
+    }
+
+    .project-year {
+      position: absolute;
+      top: 2.5rem;
+      right: 2rem;
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      color: rgba(200,245,224,0.2);
+    }
+
+    /* ── ABOUT ── */
+    .about-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6rem;
+      align-items: center;
+    }
+
+    @media (max-width: 700px) {
+      .about-layout { grid-template-columns: 1fr; gap: 3rem; }
+    }
+
+    .about-stat {
+      margin-top: 3rem;
+      display: flex;
+      gap: 3rem;
+    }
+
+    .stat-num {
+      font-family: var(--serif);
+      font-size: 3rem;
+      font-weight: 300;
+      color: var(--mint);
+      line-height: 1;
+    }
+
+    .stat-label {
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      color: rgba(200,245,224,0.4);
+      text-transform: uppercase;
+      margin-top: 0.4rem;
+    }
+
+    .about-quote {
+      font-family: var(--serif);
+      font-size: clamp(1.4rem, 2.5vw, 2rem);
+      font-style: italic;
+      font-weight: 300;
+      color: rgba(200,245,224,0.55);
+      line-height: 1.5;
+      border-left: 1px solid rgba(111,255,200,0.25);
+      padding-left: 2rem;
+    }
+
+    /* ── CONTACT ── */
+    #contact { text-align: center; }
+
+    .contact-email {
+      display: inline-block;
+      font-family: var(--serif);
+      font-size: clamp(1.8rem, 4vw, 3rem);
+      color: var(--ghost);
+      text-decoration: none;
+      border-bottom: 0.5px solid rgba(111,255,200,0.3);
+      padding-bottom: 0.25rem;
+      transition: color 0.3s, border-color 0.3s;
+      margin: 2rem 0 3rem;
+    }
+
+    .contact-email:hover {
+      color: var(--mint);
+      border-color: var(--mint);
+    }
+
+    .contact-links {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .contact-links a {
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(200,245,224,0.4);
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+
+    .contact-links a:hover { color: var(--mint); }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 0.5px solid rgba(111,255,200,0.08);
+      padding: 2rem 2.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 100%;
+      font-size: 0.7rem;
+      color: rgba(200,245,224,0.2);
+      letter-spacing: 0.1em;
+    }
+
+    /* ── SCROLL REVEAL ── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: none;
+    }
+
+    /* ── MOBILE NAV ── */
+    @media (max-width: 600px) {
+      nav ul { display: none; }
+      nav { padding: 1rem 1.5rem; }
+      section { padding: 5rem 1.5rem; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .reveal { opacity: 1; transform: none; transition: none; }
+      @keyframes breathe { 0%, 100% { opacity: 0.5; } }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a class="nav-logo" href="#">KEEPERS<span> XR</span></a>
+    <ul>
+      <li><a href="#work">Work</a></li>
+      <li><a href="#services">Services</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section id="hero">
+    <canvas id="three-canvas"></canvas>
+    <div class="hero-content">
+      <p class="hero-eyebrow">Kampala · Immersive Studio</p>
+      <h1 class="hero-title">Stories that<br><em>inhabit space</em></h1>
+      <p class="hero-sub">We make VR, fulldome, and 360° experiences rooted in African heritage, ecology, and futures.</p>
+      <a href="#work" class="hero-cta">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="currentColor" stroke-width="0.8"/><path d="M5 7h4M7 5l2 2-2 2" stroke="currentColor" stroke-width="0.8" stroke-linecap="round"/></svg>
+        Explore our work
+      </a>
+    </div>
+    <p class="hero-drag-hint">drag to orbit</p>
+  </section>
+
+  <!-- SERVICES -->
+  <div class="divider"></div>
+  <section id="services">
+    <p class="section-label reveal">What we make</p>
+    <h2 class="section-title reveal">Immersive <em>formats</em></h2>
+    <p class="section-body reveal">We design and produce across the full spectrum of spatial media — from intimate VR pieces to monumental fulldome screenings.</p>
+
+    <div class="services-grid">
+      <div class="service-card reveal">
+        <svg class="service-icon" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="0.8">
+          <circle cx="18" cy="18" r="14"/>
+          <ellipse cx="18" cy="18" rx="14" ry="7"/>
+          <line x1="4" y1="18" x2="32" y2="18"/>
+        </svg>
+        <p class="service-name">Virtual Reality</p>
+        <p class="service-desc">Cinematic and interactive VR experiences for headsets and immersive installations.</p>
+      </div>
+      <div class="service-card reveal">
+        <svg class="service-icon" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="0.8">
+          <path d="M18 4 L32 28 L4 28 Z"/>
+          <circle cx="18" cy="18" r="4"/>
+        </svg>
+        <p class="service-name">Fulldome</p>
+        <p class="service-desc">360° dome productions for planetariums, festival domes, and ceremony spaces.</p>
+      </div>
+      <div class="service-card reveal">
+        <svg class="service-icon" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="0.8">
+          <rect x="6" y="10" width="24" height="16" rx="1"/>
+          <path d="M14 10V8M22 10V8M6 18h24"/>
+          <circle cx="18" cy="22" r="2"/>
+        </svg>
+        <p class="service-name">360° Video</p>
+        <p class="service-desc">Documentary and narrative 360° films for impact, education, and festivals.</p>
+      </div>
+      <div class="service-card reveal">
+        <svg class="service-icon" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="0.8">
+          <rect x="8" y="6" width="12" height="20" rx="1"/>
+          <path d="M20 10l8 4-8 4M20 18l8 4-8 4"/>
+        </svg>
+        <p class="service-name">Augmented Reality</p>
+        <p class="service-desc">Geolocated and marker-based AR layers that extend physical spaces into living stories.</p>
+      </div>
+      <div class="service-card reveal">
+        <svg class="service-icon" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="0.8">
+          <path d="M6 28 Q18 8 30 28"/>
+          <circle cx="18" cy="16" r="3"/>
+          <line x1="6" y1="28" x2="30" y2="28"/>
+        </svg>
+        <p class="service-name">Virtual Tours</p>
+        <p class="service-desc">Interactive spatial tours for cultural heritage sites, museums, and natural landscapes.</p>
+      </div>
+      <div class="service-card reveal">
+        <svg class="service-icon" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="0.8">
+          <polygon points="18,4 34,14 34,26 18,32 2,26 2,14"/>
+          <circle cx="18" cy="18" r="5"/>
+        </svg>
+        <p class="service-name">Creative Direction</p>
+        <p class="service-desc">Afrofuturist visual identity and spatial narrative consulting for cultural institutions.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- WORK -->
+  <div class="divider"></div>
+  <section id="work">
+    <p class="section-label reveal">Selected projects</p>
+    <h2 class="section-title reveal">Keeping <em>stories</em><br>in their places</h2>
+
+    <div class="projects-grid">
+      <div class="project-card reveal">
+        <span class="project-tag">VR · 360°</span>
+        <span class="project-year">2023–24</span>
+        <h3 class="project-title">Keepers of the Forest: The Batwa Legacy</h3>
+        <p class="project-desc">A VR and 360° documentary about the Batwa people's connection to the Bwindi and Virunga forest ranges — climate, memory, and belonging. Supported by the French Embassy in Uganda.</p>
+      </div>
+      <div class="project-card reveal">
+        <span class="project-tag">AR · Co-creation</span>
+        <span class="project-year">2024</span>
+        <h3 class="project-title">CITIES</h3>
+        <p class="project-desc">A co-created geolocated AR platform layering community voices and spatial stories across Kampala's urban landscape.</p>
+      </div>
+      <div class="project-card reveal">
+        <span class="project-tag">Speculative · MR</span>
+        <span class="project-year">2024</span>
+        <h3 class="project-title">Forest of the Forgotten Codes</h3>
+        <p class="project-desc">A speculative mixed-reality story set in 2100, exploring what knowledge the forest holds — and what happens when we stop listening.</p>
+      </div>
+      <div class="project-card reveal">
+        <span class="project-tag">Fulldome · Game</span>
+        <span class="project-year">2025</span>
+        <h3 class="project-title">African Dome Futures</h3>
+        <p class="project-desc">An Afrofuturist fulldome experience and collective ceremony game exploring indigenous futures across the continent's dome network.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <div class="divider"></div>
+  <section id="about">
+    <p class="section-label reveal">About the studio</p>
+    <div class="about-layout">
+      <div>
+        <h2 class="section-title reveal">We keep<br><em>what matters</em><br>alive</h2>
+        <p class="section-body reveal" style="margin-top:1.5rem;">Keepers XR is an immersive storytelling and creative studio founded in Kampala, Uganda. We believe spatial media can democratize how cultures document themselves, inspire climate action, and imagine futures on their own terms.</p>
+        <div class="about-stat reveal">
+          <div>
+            <p class="stat-num">7+</p>
+            <p class="stat-label">Years of XR</p>
+          </div>
+          <div>
+            <p class="stat-num">12+</p>
+            <p class="stat-label">Productions</p>
+          </div>
+          <div>
+            <p class="stat-num">∞</p>
+            <p class="stat-label">Forest stories</p>
+          </div>
+        </div>
+      </div>
+      <blockquote class="about-quote reveal">
+        "Immersive technologies can democratize media, inspire action, and document cultural heritage before it disappears."
+      </blockquote>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <div class="divider"></div>
+  <section id="contact">
+    <p class="section-label reveal">Get in touch</p>
+    <h2 class="section-title reveal">Let's build<br>something <em>together</em></h2>
+    <a href="mailto:hello@keepersxr.com" class="contact-email reveal">hello@keepersxr.com</a>
+    <div class="contact-links reveal">
+      <a href="#">Instagram</a>
+      <a href="#">Vimeo</a>
+      <a href="#">LinkedIn</a>
+      <a href="#">NewImages Festival</a>
+    </div>
+  </section>
+
+  <footer>
+    <span>© 2025 Keepers XR</span>
+    <span>Kampala, Uganda</span>
+  </footer>
+
+  <!-- THREE.JS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+  <script>
+    /* ── THREE.JS DOME SCENE ── */
+    (function () {
+      const canvas = document.getElementById('three-canvas');
+      const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.setClearColor(0x050f07, 1);
+
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(60, 1, 0.1, 200);
+      camera.position.set(0, 0, 5);
+
+      /* Resize */
+      function resize() {
+        const w = canvas.parentElement.clientWidth;
+        const h = canvas.parentElement.clientHeight;
+        renderer.setSize(w, h);
+        camera.aspect = w / h;
+        camera.updateProjectionMatrix();
+      }
+      resize();
+      window.addEventListener('resize', resize);
+
+      /* ── DOME WIREFRAME ── */
+      const domeGeo = new THREE.SphereGeometry(2.2, 24, 24, 0, Math.PI * 2, 0, Math.PI * 0.55);
+      const domeMat = new THREE.MeshBasicMaterial({
+        color: 0x6fffc8,
+        wireframe: true,
+        transparent: true,
+        opacity: 0.07,
+      });
+      const dome = new THREE.Mesh(domeGeo, domeMat);
+      scene.add(dome);
+
+      /* Solid dome interior hint */
+      const domeInnerGeo = new THREE.SphereGeometry(2.15, 24, 24, 0, Math.PI * 2, 0, Math.PI * 0.55);
+      const domeInnerMat = new THREE.MeshBasicMaterial({
+        color: 0x0a2010,
+        side: THREE.BackSide,
+        transparent: true,
+        opacity: 0.5,
+      });
+      scene.add(new THREE.Mesh(domeInnerGeo, domeInnerMat));
+
+      /* ── STAR PARTICLES (constellation inside dome) ── */
+      const starCount = 1800;
+      const starPos = new Float32Array(starCount * 3);
+      const starAlpha = new Float32Array(starCount);
+      for (let i = 0; i < starCount; i++) {
+        const r = 1.8 + Math.random() * 0.3;
+        const theta = Math.random() * Math.PI * 2;
+        const phi = Math.random() * Math.PI * 0.5;
+        starPos[i * 3]     = r * Math.sin(phi) * Math.cos(theta);
+        starPos[i * 3 + 1] = r * Math.cos(phi);
+        starPos[i * 3 + 2] = r * Math.sin(phi) * Math.sin(theta);
+        starAlpha[i] = 0.2 + Math.random() * 0.8;
+      }
+      const starGeo = new THREE.BufferGeometry();
+      starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
+      const starMat = new THREE.PointsMaterial({
+        color: 0x6fffc8,
+        size: 0.018,
+        transparent: true,
+        opacity: 0.7,
+        sizeAttenuation: true,
+      });
+      scene.add(new THREE.Points(starGeo, starMat));
+
+      /* ── AMBIENT PARTICLES (floating outside) ── */
+      const ambCount = 400;
+      const ambPos = new Float32Array(ambCount * 3);
+      for (let i = 0; i < ambCount; i++) {
+        ambPos[i * 3]     = (Math.random() - 0.5) * 12;
+        ambPos[i * 3 + 1] = (Math.random() - 0.5) * 8;
+        ambPos[i * 3 + 2] = (Math.random() - 0.5) * 10 - 2;
+      }
+      const ambGeo = new THREE.BufferGeometry();
+      ambGeo.setAttribute('position', new THREE.BufferAttribute(ambPos, 3));
+      const ambMat = new THREE.PointsMaterial({
+        color: 0x3a8c62,
+        size: 0.012,
+        transparent: true,
+        opacity: 0.35,
+      });
+      scene.add(new THREE.Points(ambGeo, ambMat));
+
+      /* ── ORBIT RING ── */
+      const ringGeo = new THREE.TorusGeometry(2.2, 0.003, 4, 120);
+      const ringMat = new THREE.MeshBasicMaterial({ color: 0x6fffc8, transparent: true, opacity: 0.2 });
+      const ring = new THREE.Mesh(ringGeo, ringMat);
+      ring.rotation.x = Math.PI / 2;
+      scene.add(ring);
+
+      /* ── MOUSE ORBIT ── */
+      let isDragging = false;
+      let prevMouse = { x: 0, y: 0 };
+      let targetRot = { x: 0, y: 0 };
+      let currentRot = { x: 0, y: 0 };
+      let autoRotate = true;
+
+      canvas.addEventListener('mousedown', e => {
+        isDragging = true;
+        autoRotate = false;
+        prevMouse = { x: e.clientX, y: e.clientY };
+      });
+
+      window.addEventListener('mousemove', e => {
+        if (!isDragging) return;
+        const dx = e.clientX - prevMouse.x;
+        const dy = e.clientY - prevMouse.y;
+        targetRot.y += dx * 0.005;
+        targetRot.x += dy * 0.005;
+        targetRot.x = Math.max(-0.6, Math.min(0.6, targetRot.x));
+        prevMouse = { x: e.clientX, y: e.clientY };
+      });
+
+      window.addEventListener('mouseup', () => { isDragging = false; });
+
+      /* Touch support */
+      canvas.addEventListener('touchstart', e => {
+        isDragging = true;
+        autoRotate = false;
+        prevMouse = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      }, { passive: true });
+
+      canvas.addEventListener('touchmove', e => {
+        if (!isDragging) return;
+        const dx = e.touches[0].clientX - prevMouse.x;
+        const dy = e.touches[0].clientY - prevMouse.y;
+        targetRot.y += dx * 0.005;
+        targetRot.x += dy * 0.005;
+        targetRot.x = Math.max(-0.6, Math.min(0.6, targetRot.x));
+        prevMouse = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      }, { passive: true });
+
+      canvas.addEventListener('touchend', () => { isDragging = false; });
+
+      /* ── ANIMATE ── */
+      let t = 0;
+      function animate() {
+        requestAnimationFrame(animate);
+        t += 0.008;
+
+        if (autoRotate) targetRot.y += 0.003;
+
+        currentRot.x += (targetRot.x - currentRot.x) * 0.06;
+        currentRot.y += (targetRot.y - currentRot.y) * 0.06;
+
+        dome.rotation.x = currentRot.x;
+        dome.rotation.y = currentRot.y;
+        scene.children.forEach(c => {
+          if (c !== dome) {
+            c.rotation.x = currentRot.x;
+            c.rotation.y = currentRot.y;
+          }
+        });
+
+        /* Pulse dome opacity */
+        domeMat.opacity = 0.05 + 0.03 * Math.sin(t * 0.7);
+        starMat.opacity = 0.5 + 0.2 * Math.sin(t * 0.4);
+
+        renderer.render(scene, camera);
+      }
+
+      animate();
+    })();
+
+    /* ── SCROLL REVEAL ── */
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          observer.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.12 });
+
+    document.querySelectorAll('.reveal').forEach((el, i) => {
+      el.style.transitionDelay = `${(i % 4) * 0.07}s`;
+      observer.observe(el);
+    });
+  </script>
+</body>
+</html>
